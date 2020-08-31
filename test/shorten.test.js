@@ -3,7 +3,7 @@ const chai = require('chai'),
     assert = chai.assert,
     expect = chai.expect;
 const program = require('commander');
-const shorten = require('../lib/commands/shorten')(program);
+const { exec } = require('child_process');
 
 describe('Shorten command', function () {
 	let sandbox;
@@ -92,5 +92,19 @@ describe('Shorten command', function () {
     response = program.parse(argv);
 
     expect(response).to.equal('error: missing required argument `link\'');
+  });
+
+  it('should return just the shorten url if the option simple is given', function(done) {
+    exec('node ./lib/twzer shorten example.com -s', (_, stdout) => {
+      expect(stdout).to.equal('https://bit.ly/2hEY3bj\n');
+      done();
+    });
+  });
+
+  it('should return just the long url if the option simple is given', function(done) {
+    exec('node ./lib/twzer expand https://bit.ly/2hEY3bj -s', (_, stdout) => {
+      expect(stdout).to.equal('http://example.com/\n');
+      done();
+    });
   });
 });
